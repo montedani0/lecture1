@@ -2,6 +2,8 @@
 
 from gestionale.vendite.ordini import Ordine, RigaOrdine, OrdineConSconto
 from gestionale.core.prodotti import Prodotto, crea_prodotto_standard  # DEVO IMPORTARLO PER POTERLO UTILIZZARE
+import networkx as nx
+
 print("===========================================")
 p1 = Prodotto("Ebook",120.0,1,"AAA")
 p2 = crea_prodotto_standard("Tablet",750)
@@ -16,10 +18,8 @@ print(p2)
 from gestionale.core.prodotti import ProdottoScontato as ps
 p3 = ps("Auricolari",230,1,"ABC",10)
 
-
 #3
 p4 = ps("Auricolari", 230, 1, "ABC", 10)
-
 #4
 
 p5 = ps("Auricolari",230,1,"ABC",10)
