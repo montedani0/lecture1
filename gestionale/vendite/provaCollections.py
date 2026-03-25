@@ -1,10 +1,9 @@
 import copy
-from collections import Counter
-from dis import print_instructions
+from collections import Counter, deque
 
 from gestionale.core.cliente import ClienteRecord
 from gestionale.core.prodotti import ProdottoRecord
-from gestionale.vendite.ordini import Ordine
+from gestionale.vendite.ordini import Ordine, RigaOrdine
 
 p1 = ProdottoRecord("Laptop", 1200.0)
 p2 = ProdottoRecord("Mouse", 20.0)
@@ -67,8 +66,8 @@ for desc, valore in AliquoteIva:
 
 def calcola_statistiche_carrello(carrello):
     #Restituisce prezzo totale, prezzo medio, prezzo max e min
-    prezzi = [p.prezzo_unitario for p in carrello]
-    return (sum(prezzi), sum(prezzi) / len(prezzi),max(prezzi),min(prezzi))
+    prez = [p.prezzo_unitario for p in carrello]
+    return sum(prez), sum(prez) / len(prez),max(prez),min(prez)
 
 tot,media,mas,mini = calcola_statistiche_carrello(carrello)
 tot, *altri_campi = calcola_statistiche_carrello(carrello)
@@ -262,3 +261,23 @@ print(f"vendite_gennaio aggiornato {vendite_gennaio}")
 #metodi da ricordare
 #c.most_common(n)  #restituisce gli n elementi più frequenti
 #c.total   #somma dei conteggi
+
+
+print("==============================================")
+
+
+#Deque
+coda_ordini = deque()
+
+for i in range(1,10):
+    cliente= ClienteRecord(f"Cliente{i}",f"cliente{i}@gmail.com","Gold")
+    prodotto = ProdottoRecord(f"Prodotto{i}", 100.0*1)
+    ordine = Ordine([RigaOrdine(prodotto,1)], cliente)
+    coda_ordini.append(ordine)
+
+print(f"Ordini in coda {len(coda_ordini)}")
+
+while coda_ordini:
+    ordine_corrente= coda_ordini.popleft()
+    print(f"Sto gestendo l'ordine del cliente: {ordine_corrente.cliente}")
+print("Ho processato tutti gli ordini")
