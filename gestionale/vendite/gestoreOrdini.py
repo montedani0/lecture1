@@ -7,7 +7,9 @@ Scrivere un software gestionale che abbia le seguenti funzionalità:
 """
 from collections import deque, Counter, defaultdict
 
-from gestionale.core.cliente import Cliente
+from gestionale.core.cliente import Cliente, ClienteRecord
+from gestionale.core.prodotti import ProdottoRecord
+from gestionale.vendite.ordini import RigaOrdine
 from gestionale.vendite.provaCollections import Ordine, ordine
 
 
@@ -26,8 +28,9 @@ class GestorOrdini:
 
     def processa_prox_ordine(self):
         """"Legge il prossimo ordine in coda e lo gestisce"""
-
         #Si assicura che un ordine da processare esista
+        print("\n" + "-" * 60)
+        print("\n" + "-" * 60)
         if not self._ordini_da_processare:
             print("Non ci sono ordini in coda")
             return False
@@ -55,11 +58,13 @@ class GestorOrdini:
 
     def processa_tutti_ordini(self):
         """Processa tutti gli ordini presenti"""
-        print(f"Processando{len(self._ordini_da_processare)} ordine")
+        print("\n" + "=" * 60)
+        print(f"Processando {len(self._ordini_da_processare)} ordine")
         while self._ordini_da_processare:
             self.processa_prox_ordine()
 
         print("Tutti gli ordini sono stati processati")
+
 
 
     def get_statistiche_prodotti(self, top_n:int = 5):
@@ -75,7 +80,7 @@ class GestorOrdini:
         valori = []
         for cat in self._ordini_per_categoria.keys():
             ordini = self._ordini_per_categoria[cat]
-            total = sum([o.totale_lordo() for o in ordini])
+            total = sum([o.totale_lordo(0.22) for o in ordini])
             valori.append((cat,total))
         return valori
 
@@ -94,3 +99,34 @@ class GestorOrdini:
         for cat,total in self.get_distibuzione_categorie():
             print(f"{cat} : {total}")
 
+def test_modulo():
+    sistema = GestorOrdini()
+
+    ordini = [
+        Ordine([RigaOrdine(ProdottoRecord("Laptop",1200),1),
+                RigaOrdine(ProdottoRecord("Mouse",10.0),3)],
+               ClienteRecord("Mario Rossi", "mariorossi@gmail.com", "Gold")),
+        Ordine([RigaOrdine(ProdottoRecord("Laptop",1200),1),
+                RigaOrdine(ProdottoRecord("Mouse",10.0),3),
+                RigaOrdine(ProdottoRecord("Tablet",500),1),
+                RigaOrdine(ProdottoRecord("Cuffie",250.0),3)],
+               ClienteRecord("Fulvio Bianchi", "fulviobianchi@gmail.com", "Gold")),
+        Ordine([RigaOrdine(ProdottoRecord("Laptop",1200),2),
+                RigaOrdine(ProdottoRecord("Mouse",10.0),2)],
+               ClienteRecord("Giuse Averta", "giuaverta@gmail.com", "Silver")),
+        Ordine([RigaOrdine(ProdottoRecord("Tablet",900),1),
+                RigaOrdine(ProdottoRecord("Cuffie",250),3)],
+               ClienteRecord("Carlo Masone", "camasone@gmail.com", "Gold")),
+        Ordine([RigaOrdine(ProdottoRecord("Laptop",1200),1),
+                RigaOrdine(ProdottoRecord("Mouse",10.0),3)],
+               ClienteRecord("Fra Pistilli", "frapis@gmail.com", "Bronze"))]
+
+    for o in ordini:
+        sistema.add_ordine(o)
+
+    sistema.processa_tutti_ordini()
+
+    sistema.stampa_riepilogo()
+
+if __name__ == "__main__":
+    test_modulo()
