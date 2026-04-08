@@ -1,4 +1,3 @@
-from importlib.metadata import pass_none
 
 import flet as ft
 
@@ -50,8 +49,6 @@ class View:
         self._lvOut = ft.ListView(expand=True)
 
         self._page.add(row1,row2, row3, self._lvOut)
-
-
 
 
     def set_controller(self, c):

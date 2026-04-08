@@ -7,10 +7,10 @@ Scrivere un software gestionale che abbia le seguenti funzionalità:
 """
 from collections import deque, Counter, defaultdict
 
-from gestionale.core.cliente import Cliente, ClienteRecord
+from gestionale.core.cliente import ClienteRecord
 from gestionale.core.prodotti import ProdottoRecord
-from gestionale.vendite.ordini import RigaOrdine
-from gestionale.vendite.provaCollections import Ordine, ordine
+from gestionale.vendite.ordini import Ordine, RigaOrdine
+from main import ordine
 
 
 class GestorOrdini:
@@ -37,7 +37,7 @@ class GestorOrdini:
         print("\n" + "-" * 60)
         if not self._ordini_da_processare:
             print("Non ci sono ordini in coda")
-            return False
+            return False, Ordine([], ClienteRecord("","",""))
 
         #Se esiste gestiamo il primo in cosa
         ordine = self._ordini_da_processare.popleft()
@@ -57,17 +57,21 @@ class GestorOrdini:
 
         print("Ordine correttamente processato")
 
-        return True
+        return True, ordine
 
 
     def processa_tutti_ordini(self):
         """Processa tutti gli ordini presenti"""
         print("\n" + "=" * 60)
         print(f"Processando {len(self._ordini_da_processare)} ordine")
+        ordini = []
+
         while self._ordini_da_processare:
-            self.processa_prox_ordine()
+            _,ordine = self.processa_prox_ordine()
+            ordini.append(ordine)
 
         print("Tutti gli ordini sono stati processati")
+        return ordini
 
 
 
@@ -89,6 +93,8 @@ class GestorOrdini:
         return valori
 
 
+
+
     def stampa_riepilogo(self):
         print("\n" + "="*60)
         print("Stampa attuale business")
@@ -102,6 +108,24 @@ class GestorOrdini:
         print(f"Fatturato per categoria")
         for cat,total in self.get_distibuzione_categorie():
             print(f"{cat} : {total}")
+
+
+    def get_riepilogo(self):
+        sommario = ""
+        sommario += ("\n" + "="*60)
+        sommario +=f"\n Ordini correttamente gestiti : {len(self._ordini_processati)}"
+        sommario +=f"\n Ordini in coda : {len(self._ordini_da_processare)}"
+
+        sommario +="\n Prodotti più venduti"
+        for prodotti,quantita in self.get_statistiche_prodotti():
+            sommario +=f"\n {prodotti} : {quantita}"
+
+        sommario += f"\n Fatturato per categoria"
+        for cat,total in self.get_distibuzione_categorie():
+            sommario += f"\n {cat} : {total}"
+        sommario += ("\n" + "=" * 60)
+
+        return sommario
 
 def test_modulo():
     sistema = GestorOrdini()
