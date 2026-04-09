@@ -5,12 +5,14 @@ Scrivere un software gestionale che abbia le seguenti funzionalità:
 2)avere delle funzionalità per avere statistiche sugli ordini
 3)fornire statistiche sulla distribuzione di ordini per categoria di cliente
 """
+import random
 from collections import deque, Counter, defaultdict
 
+from dao.dao import DAO
 from gestionale.core.cliente import ClienteRecord
-from gestionale.core.prodotti import ProdottoRecord
+from gestionale.core.prodotto import ProdottoRecord
 from gestionale.vendite.ordini import Ordine, RigaOrdine
-from main import ordine
+
 
 
 class GestorOrdini:
@@ -19,6 +21,22 @@ class GestorOrdini:
         self._ordini_processati  = []
         self._statistiche_prodotti = Counter()
         self._ordini_per_categoria = defaultdict(list)
+        self._dao = DAO()
+        self._allP = []
+        self._allC = []
+        self._fill_data()
+
+    def _fill_data(self):
+        #Leggo prodotti e clienti dal db, e poi creo  degli ordini randomici per testar la mia app
+        self._allP.extend(self._dao.getAllProdotti())
+        self._allC.extend(self._dao.getAllClienti())
+
+        for i in range(10):
+            indexP = random.randint(0,len(self._allP)-1)
+            indexC = random.randint(0,len(self._allC)-1)
+            ordine = Ordine([RigaOrdine(self._allP[indexP],random.randint(1,5))],
+                         self._allC[indexC])
+            self.add_ordine(ordine)
 
     def add_ordine(self, ordine:Ordine):
         """Aggiunge un nuovo ordie agli elementi da gestire"""
@@ -27,8 +45,20 @@ class GestorOrdini:
         print(f"Ordini ancora da processare: {len(self._ordini_da_processare)}")
 
 
+    def _update_DB(self,prod,cliente):
+        if not self._dao.hasProdotto(prod):
+            self._dao.addProdotto(prod)
+
+        if not self._dao.hasCliente(cliente):
+            self._dao.addCliente(cliente)
+
+
+
     def crea_ordine(self,nomeP, prezzoP,quantitaP,nomeC, email,categoria):
-        return Ordine([RigaOrdine(ProdottoRecord(nomeP,prezzoP),quantitaP)],ClienteRecord(nomeC,email,categoria))
+        prod = ProdottoRecord(nomeP,prezzoP)
+        clie = ClienteRecord(nomeC,email,categoria)
+        self._update_DB (prod,clie)
+        return Ordine([RigaOrdine(prod,quantitaP)],clie)
 
     def processa_prox_ordine(self):
         """"Legge il prossimo ordine in coda e lo gestisce"""

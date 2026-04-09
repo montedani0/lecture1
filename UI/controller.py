@@ -69,7 +69,7 @@ class Controller:
             ft.Text("Dettagli dell'ordine:"))
         self._view._lvOut.controls.append(
             ft.Text(ordine.riepilogo()))
-        self._view._lvOut.controls.append("\n")
+        self._view._lvOut.controls.append(ft.Text("\n"))
         self._view.update_page()
 
 

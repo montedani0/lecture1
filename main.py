@@ -27,7 +27,7 @@ p5 = ps("Auricolari",230,1,"ABC",10)
 
 print("------------------------------------------------------------")
 
-from gestionale.core import cliente as c, prodotti
+from gestionale.core import clienti as c, prodotti
 
 c1 = c.Cliente("Mario Rossi","mail@gmial.com", "Gold")
 

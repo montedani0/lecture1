@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from gestionale.core.cliente import ClienteRecord
-from gestionale.core.prodotti import ProdottoRecord
+from gestionale.core.prodotto import ProdottoRecord
 from gestionale.vendite.ordini import Ordine, RigaOrdine
 
 
